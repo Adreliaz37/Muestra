@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingrid 360 · Portal interno</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #0b1f1c; --ink2: #12302b; --green: #1f7a63; --mint: #8fe3c8; --gold: #c9a24b; --gold-l: #e8cf8e;
+      --cream: #f7f3ea; --paper: #fffdf8; --muted: #66746f; --line: #e4ddcd; --red: #c0492f; --amber: #b7791f;
+      --serif: "Fraunces", Georgia, serif; --sans: "Inter", "Segoe UI", system-ui, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--sans); color: var(--ink); background: var(--cream); line-height: 1.5; font-size: 14.5px; -webkit-font-smoothing: antialiased; }
+    button { font: inherit; cursor: pointer; }
+    a { color: inherit; }
+    .app { display: grid; grid-template-columns: 248px 1fr; min-height: 100vh; }
+
+    aside { background: var(--ink); color: #cfdcd8; padding: 22px 14px; position: sticky; top: 0; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
+    .logo { display: flex; align-items: center; gap: 11px; font-family: var(--serif); font-weight: 600; font-size: 1.15rem; color: #fff; padding: 0 8px 20px; text-decoration: none; }
+    .logo small { display: block; font-family: var(--sans); font-size: 0.6rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold-l); font-weight: 500; }
+    .mark { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--gold); display: grid; place-items: center; color: var(--gold-l); flex: none; }
+    .navh { font-size: 0.66rem; letter-spacing: 0.2em; text-transform: uppercase; color: #6f8a83; padding: 14px 10px 6px; }
+    .nav button { width: 100%; display: flex; align-items: center; gap: 11px; background: transparent; border: 0; color: #cfdcd8; padding: 9px 10px; border-radius: 10px; text-align: left; font-weight: 500; }
+    .nav button:hover { background: rgba(255, 255, 255, 0.06); color: #fff; }
+    .nav button.on { background: rgba(201, 162, 75, 0.16); color: var(--gold-l); }
+    .nav button i { font-style: normal; width: 20px; text-align: center; }
+    .nav button span { margin-left: auto; font-size: 0.72rem; background: rgba(255, 255, 255, 0.1); padding: 1px 8px; border-radius: 999px; }
+    .side-foot { margin-top: auto; padding: 14px 10px 0; font-size: 0.8rem; display: grid; gap: 8px; }
+    .side-foot a { color: var(--gold-l); text-decoration: none; }
+    .side-foot button { background: transparent; border: 0; color: #6f8a83; text-align: left; padding: 0; font-size: 0.78rem; }
+
+    main { padding: 26px 32px 60px; min-width: 0; }
+    .demo { background: var(--gold); color: var(--ink); font-size: 0.76rem; font-weight: 600; padding: 5px 12px; border-radius: 8px; display: inline-block; margin-bottom: 16px; }
+    .top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 22px; }
+    h1 { font-family: var(--serif); font-weight: 600; font-size: 2rem; line-height: 1.15; letter-spacing: -0.01em; }
+    .sub { color: var(--muted); margin-top: 4px; max-width: 640px; }
+    h2 { font-family: var(--serif); font-weight: 600; font-size: 1.2rem; margin-bottom: 12px; }
+    .btn { border: 0; background: var(--ink); color: #fff; font-weight: 600; padding: 10px 18px; border-radius: 999px; transition: transform 0.15s, background 0.15s; white-space: nowrap; }
+    .btn:hover { background: var(--ink2); transform: translateY(-1px); }
+    .btn.gold { background: var(--gold); color: var(--ink); } .btn.gold:hover { background: var(--gold-l); }
+    .btn.line { background: transparent; color: var(--ink); border: 1px solid #cfc6b0; } .btn.line:hover { background: #efe8d8; }
+    .btn.sm { padding: 6px 13px; font-size: 0.82rem; }
+    .btn.red { background: var(--red); }
+    .btn:disabled { opacity: 0.45; cursor: default; transform: none; }
+
+    .grid { display: grid; gap: 16px; }
+    .k6 { grid-template-columns: repeat(6, 1fr); } .c2 { grid-template-columns: 1.25fr 1fr; } .c3 { grid-template-columns: repeat(3, 1fr); } .c4 { grid-template-columns: repeat(4, 1fr); }
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 18px; min-width: 0; }
+    .kpi small { color: var(--muted); font-size: 0.76rem; display: block; }
+    .kpi b { font-family: var(--serif); font-size: 1.7rem; font-weight: 600; display: block; line-height: 1.2; }
+    .kpi em { font-style: normal; font-size: 0.74rem; color: var(--green); font-weight: 600; }
+    .mod { cursor: pointer; transition: transform 0.18s, border-color 0.18s; text-align: left; }
+    .mod:hover { transform: translateY(-3px); border-color: var(--gold); }
+    .mod .ic { font-size: 1.4rem; } .mod h3 { font-size: 0.98rem; margin: 6px 0 2px; } .mod p { color: var(--muted); font-size: 0.82rem; }
+
+    .row { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-top: 1px solid var(--line); }
+    .row:first-of-type { border-top: 0; }
+    .row .body { flex: 1; min-width: 0; }
+    .row h3 { font-size: 0.98rem; font-weight: 600; }
+    .row p { color: var(--muted); font-size: 0.84rem; }
+    .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 7px; }
+    .chip { font-size: 0.74rem; padding: 3px 10px; border-radius: 999px; background: #efe8d8; color: #4a554f; font-weight: 500; white-space: nowrap; }
+    .chip.g { background: #dff1ea; color: #14614d; } .chip.r { background: #f8dfd8; color: #8f2f1b; } .chip.a { background: #f8ebcf; color: #7c5410; } .chip.d { background: var(--ink); color: var(--gold-l); } .chip.b { background: #dfe9f5; color: #1f4a7a; }
+    .ring { --p: 50; --c: var(--green); flex: none; width: 54px; height: 54px; border-radius: 50%; background: conic-gradient(var(--c) calc(var(--p) * 1%), #e9e2d2 0); display: grid; place-items: center; }
+    .ring b { width: 42px; height: 42px; border-radius: 50%; background: var(--paper); display: grid; place-items: center; font-size: 0.86rem; }
+    .av { flex: none; width: 42px; height: 42px; border-radius: 50%; background: var(--ink); color: var(--gold-l); display: grid; place-items: center; font-weight: 600; font-size: 0.86rem; }
+    .acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+    .bar { height: 8px; background: #e9e2d2; border-radius: 99px; overflow: hidden; }
+    .bar i { display: block; height: 100%; background: var(--green); border-radius: 99px; transition: width 0.5s; }
+    .bar.low i { background: var(--red); } .bar.mid i { background: var(--gold); }
+    .tools { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+    select { font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid #cfc6b0; background: #fff; }
+    .steps { display: flex; gap: 4px; margin-top: 8px; }
+    .steps i { flex: 1; height: 5px; border-radius: 9px; background: #e9e2d2; } .steps i.on { background: var(--gold); }
+
+    .kan { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .col { background: #efe8d8; border-radius: 16px; padding: 12px; }
+    .col h3 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin: 4px 6px 10px; display: flex; justify-content: space-between; }
+    .tile { background: var(--paper); border-radius: 12px; padding: 12px; margin-bottom: 8px; border: 1px solid var(--line); cursor: pointer; }
+    .tile b { font-size: 0.86rem; display: block; } .tile small { color: var(--muted); }
+
+    .sched { width: 100%; border-collapse: separate; border-spacing: 4px; min-width: 760px; }
+    .sched th { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 600; padding: 6px; text-align: left; }
+    .sched th.hoy { color: var(--ink); } .sched th.hoy::after { content: " · hoy"; color: var(--gold); }
+    .sched td { vertical-align: top; }
+    .sched td.who { font-weight: 600; white-space: nowrap; padding: 8px 10px 8px 0; font-size: 0.88rem; } .sched td.who small { display: block; color: var(--muted); font-weight: 400; }
+    .shift { width: 100%; border: 0; text-align: left; border-radius: 10px; padding: 8px 9px; font-size: 0.76rem; color: #fff; line-height: 1.3; }
+    .shift b { display: block; font-size: 0.8rem; } .shift small { opacity: 0.85; }
+    .off { border-radius: 10px; padding: 8px; font-size: 0.74rem; color: #a59c88; background: repeating-linear-gradient(135deg, #f1ebdc, #f1ebdc 6px, #f7f3ea 6px, #f7f3ea 12px); text-align: center; }
+    .scroll { overflow-x: auto; }
+    .toggle { flex: none; width: 44px; height: 24px; border-radius: 99px; border: 0; background: #cfc6b0; position: relative; transition: background 0.2s; }
+    .toggle::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: left 0.2s; }
+    .toggle.on { background: var(--green); } .toggle.on::after { left: 23px; }
+
+    .level { background: var(--ink); color: #fff; border-color: var(--ink); position: relative; overflow: hidden; }
+    .level::before { content: ""; position: absolute; width: 380px; height: 380px; border-radius: 50%; right: -120px; top: -160px; background: radial-gradient(circle, rgba(201, 162, 75, 0.4), transparent 70%); }
+    .level > * { position: relative; }
+    .level .pts { font-family: var(--serif); font-size: 3rem; color: var(--gold-l); line-height: 1; }
+    .level .bar { background: rgba(255, 255, 255, 0.14); margin: 14px 0 6px; } .level .bar i { background: var(--gold); }
+    .badges { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .bdg { text-align: center; padding: 14px 8px; border-radius: 14px; border: 1px dashed #cfc6b0; opacity: 0.5; }
+    .bdg.on { opacity: 1; border: 1px solid var(--gold); background: #fbf4e1; }
+    .bdg span { font-size: 1.6rem; display: block; } .bdg b { font-size: 0.8rem; display: block; } .bdg small { font-size: 0.7rem; color: var(--muted); }
+
+    .veil { position: fixed; inset: 0; background: rgba(11, 31, 28, 0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 18px; z-index: 50; }
+    .veil.on { display: flex; }
+    .modal { background: var(--paper); border-radius: 22px; padding: 28px; width: min(680px, 100%); max-height: 90vh; overflow-y: auto; position: relative; animation: pop 0.25s ease-out; }
+    .modal .x { position: absolute; right: 16px; top: 14px; border: 0; background: #efe8d8; width: 32px; height: 32px; border-radius: 50%; font-size: 1rem; }
+    .modal h2 { font-size: 1.45rem; padding-right: 36px; }
+    .modal h4 { font-size: 0.74rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin: 20px 0 8px; }
+    .line { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 0.9rem; }
+    .line .v { margin-left: auto; font-weight: 600; white-space: nowrap; }
+    .line .bar { flex: 1; max-width: 180px; }
+    .dot { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 0.7rem; color: #fff; font-weight: 700; background: #cfc6b0; }
+    .dot.ok { background: var(--green); } .dot.no { background: var(--red); } .dot.wait { background: var(--gold); animation: blink 0.7s infinite; }
+    .note { background: #fbf4e1; border: 1px solid var(--gold-l); border-radius: 12px; padding: 12px 14px; font-size: 0.88rem; margin-top: 10px; }
+    .note.r { background: #f8dfd8; border-color: #e3a797; }
+    .mail { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; font-size: 0.9rem; white-space: pre-line; }
+    .foot { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
+    .toast { position: fixed; right: 22px; bottom: 22px; background: var(--ink); color: #fff; padding: 13px 20px; border-radius: 14px; box-shadow: 0 18px 40px rgba(11, 31, 28, 0.3); transform: translateY(90px); opacity: 0; transition: all 0.35s; z-index: 60; font-weight: 500; }
+    .toast.on { transform: none; opacity: 1; } .toast b { color: var(--gold-l); }
+    .scan li { list-style: none; display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+    @keyframes pop { from { transform: scale(0.96); opacity: 0; } }
+    @keyframes blink { 50% { opacity: 0.35; } }
+
+    @media (max-width: 1100px) { .k6 { grid-template-columns: repeat(3, 1fr); } .c4 { grid-template-columns: 1fr 1fr; } .c2, .c3 { grid-template-columns: 1fr; } .kan { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 760px) {
+      .app { grid-template-columns: 1fr; }
+      aside { position: static; height: auto; padding: 14px; }
+      .nav { display: flex; overflow-x: auto; gap: 4px; } .nav button { width: auto; white-space: nowrap; } .navh, .side-foot { display: none; }
+      .logo { padding-bottom: 12px; }
+      main { padding: 18px 16px 50px; }
+      .k6, .c4, .badges { grid-template-columns: 1fr 1fr; } .kan { grid-template-columns: 1fr; }
+      .row { flex-wrap: wrap; } .acts { width: 100%; justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <a class="logo" href="index.html"><span class="mark">I</span><span>Ingrid 360<small>Portal interno</small></span></a>
+    <div class="nav" id="nav"></div>
+    <div class="side-foot">
+      <a href="index.html">← Ver sitio público</a>
+      <button data-a="reset">Reiniciar demo</button>
+    </div>
+  </aside>
+  <main id="main"></main>
+</div>
+<div class="veil" id="veil"><div class="modal" id="modal"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ DATOS DE DEMOSTRACIÓN (todo es ficticio) ============ */
+const TIPOS = { oficinas: 'Oficinas', medico: 'Clínicas', escuelas: 'Escuelas', retail: 'Locales', industrial: 'Industrial', obra: 'Post-construcción', ventanas: 'Vidrios de altura', transporte: 'Transporte' };
+const PERFIL = {
+  nivel: { oficinas: 1, medico: 0.9, escuelas: 0.85, retail: 0.8, obra: 0.7, industrial: 0.6, ventanas: 0.45, transporte: 0.4 },
+  certs: ['seguro2m', 'fianza', 'mbe', 'antecedentes', 'greenseal', 'osha'],
+  capacidad: 250000, radio: 25
+};
+const REQ = { seguro2m: 'Seguro de responsabilidad $2M', seguro5m: 'Seguro de responsabilidad $5M', fianza: 'Fianza de cumplimiento', mbe: 'Certificación MBE', antecedentes: 'Verificación de antecedentes', greenseal: 'Productos Green Seal', osha: 'Capacitación OSHA', sindicato: 'Personal sindicalizado' };
+const CHECKS = { fuente: 'Publicado en una fuente oficial o conocida', entidad: 'La entidad contratante existe y coincide', fecha: 'Fecha de cierre vigente', cuotas: 'No pide pagos por adelantado', contacto: 'Contacto verificable' };
+const FUENTES = ['Portal de compras municipal', 'Portal de compras del condado', 'Portal estatal de licitaciones', 'Red de administradores de edificios', 'Anuncios y bolsas en línea', 'Registros de nuevos arrendamientos', 'Bolsas de trabajo locales'];
+
+const CONTRATOS = [
+  { id: 'c1', t: 'Limpieza nocturna de oficinas · edificio municipal en el Loop', e: 'Gobierno municipal · Gestión de inmuebles', f: 'Portal de compras municipal', tipo: 'oficinas', pies: 180000, valor: 412000, millas: 3, dias: 21, req: ['seguro2m', 'fianza', 'mbe', 'antecedentes'], pre: 'verificado' },
+  { id: 'c2', t: 'Clínicas comunitarias · 6 sedes', e: 'Red de Salud Comunitaria del Suroeste', f: 'Red de administradores de edificios', tipo: 'medico', pies: 64000, valor: 298000, millas: 5, dias: 14, req: ['seguro2m', 'antecedentes', 'osha'], pre: 'propuesta' },
+  { id: 'c3', t: 'Escuelas primarias zona suroeste · 4 planteles', e: 'Distrito escolar público', f: 'Portal estatal de licitaciones', tipo: 'escuelas', pies: 220000, valor: 520000, millas: 8, dias: 30, req: ['seguro2m', 'fianza', 'antecedentes', 'greenseal'] },
+  { id: 'c4', t: 'Centro de distribución en Cicero', e: 'Logística Grandes Lagos', f: 'Red de administradores de edificios', tipo: 'industrial', pies: 310000, valor: 365000, millas: 9, dias: 18, req: ['seguro2m', 'osha'] },
+  { id: 'c5', t: 'Torre corporativa en River North · pisos 12 al 30', e: 'Administradora Ribera Norte', f: 'Red de administradores de edificios', tipo: 'oficinas', pies: 240000, valor: 610000, millas: 2, dias: 9, req: ['seguro5m', 'sindicato', 'antecedentes'] },
+  { id: 'c6', t: 'Sucursales bancarias · 9 ubicaciones', e: 'Banco Pradera', f: 'Red de administradores de edificios', tipo: 'oficinas', pies: 54000, valor: 188000, millas: 12, dias: 16, req: ['seguro2m', 'antecedentes', 'fianza'], pre: 'ganado' },
+  { id: 'c7', t: 'Estaciones de tránsito · línea oeste', e: 'Autoridad regional de tránsito', f: 'Portal estatal de licitaciones', tipo: 'transporte', pies: 90000, valor: 450000, millas: 6, dias: 25, req: ['seguro5m', 'sindicato', 'fianza'], scan: 1 },
+  { id: 'c8', t: 'Plaza comercial en Little Village', e: 'Plaza Veintiséis', f: 'Red de administradores de edificios', tipo: 'retail', pies: 75000, valor: 142000, millas: 4, dias: 12, req: ['seguro2m'], scan: 1 },
+  { id: 'c9', t: 'Limpieza final de obra · edificio de usos mixtos en West Loop', e: 'Constructora Fulton', f: 'Red de administradores de edificios', tipo: 'obra', pies: 120000, valor: 88000, millas: 3, dias: 7, req: ['seguro2m', 'osha'], scan: 1 },
+  { id: 'c10', t: 'Bibliotecas y centros comunitarios · lote norte', e: 'Gobierno del condado', f: 'Portal de compras del condado', tipo: 'oficinas', pies: 95000, valor: 210000, millas: 11, dias: 28, req: ['seguro2m', 'mbe', 'antecedentes', 'greenseal'], scan: 1 },
+  { id: 'c11', t: 'Contrato urgente de limpieza corporativa · pago garantizado', e: 'Global Facility Partners LLC', f: 'Anuncios y bolsas en línea', tipo: 'oficinas', pies: 50000, valor: 900000, millas: 4, dias: 3, req: [], falla: ['fuente', 'entidad', 'cuotas'], scan: 1 },
+  { id: 'c12', t: 'Consultorios dentales · 3 sucursales en Evanston', e: 'Sonrisa Norte Dental', f: 'Red de administradores de edificios', tipo: 'medico', pies: 18000, valor: 76000, millas: 13, dias: 20, req: ['seguro2m', 'osha'], scan: 1 },
+  { id: 'c13', t: 'Lavado de vidrios de altura · torre de 40 pisos', e: 'Administradora Lago Azul', f: 'Red de administradores de edificios', tipo: 'ventanas', pies: 60000, valor: 130000, millas: 2, dias: 16, req: ['seguro5m', 'osha'], scan: 1 }
+];
+
+const E_CLI = ['Detectado', 'Contactado', 'Visita agendada', 'Propuesta', 'Cliente'];
+const CLIENTES = [
+  { id: 'p1', n: 'Despacho Halsted & Asociados', tipo: 'oficinas', pies: 32000, zona: 'West Loop', senal: 'Firmó un arrendamiento nuevo hace 12 días', valor: 96000, af: 94, pre: 2, quien: 'Rebeca Lindqvist, gerente de oficina' },
+  { id: 'p2', n: 'Centro Médico Ashland', tipo: 'medico', pies: 41000, zona: 'Pilsen', senal: 'Su contrato de limpieza vence en 45 días', valor: 168000, af: 91, pre: 1, quien: 'Dr. Óscar Benavides, director' },
+  { id: 'p3', n: 'Academia Chárter Horizonte', tipo: 'escuelas', pies: 88000, zona: 'Brighton Park', senal: 'Abre un segundo plantel en enero', valor: 205000, af: 88, pre: 0, quien: 'Lorena Castañeda, operaciones' },
+  { id: 'p4', n: 'Coworking Fábrica 606', tipo: 'oficinas', pies: 26000, zona: 'Logan Square', senal: 'Reseñas recientes mencionan baños sucios', valor: 72000, af: 86, pre: 0, quien: 'Mateo Fonseca, gerente de comunidad' },
+  { id: 'p5', n: 'Mercado La Garita', tipo: 'retail', pies: 54000, zona: 'Little Village', senal: 'Publicó una solicitud de proveedores', valor: 118000, af: 83, pre: 3, quien: 'Yolanda Prieto, administradora' },
+  { id: 'p6', n: 'Laboratorios Medisur', tipo: 'medico', pies: 23000, zona: 'Oak Brook', senal: 'Terminó una remodelación con permiso de obra', valor: 99000, af: 80, pre: 0, quien: 'Ernesto Valdivia, instalaciones' },
+  { id: 'p7', n: 'Concesionaria Autos del Lago', tipo: 'retail', pies: 38000, zona: 'Schaumburg', senal: 'Cambió de administrador de inmueble', valor: 84000, af: 74, pre: 0, quien: 'Patricia Monroy, gerente general', scan: 1 },
+  { id: 'p8', n: 'Fundación Puertas Abiertas', tipo: 'oficinas', pies: 15000, zona: 'Humboldt Park', senal: 'Recibió fondos para ampliar su sede', valor: 46000, af: 79, pre: 0, quien: 'Hugo Zamudio, director ejecutivo', scan: 1 },
+  { id: 'p9', n: 'Iglesia y Centro Comunitario San Marcos', tipo: 'oficinas', pies: 21000, zona: 'Cicero', senal: 'Pidió cotizaciones en un grupo vecinal', valor: 38000, af: 71, pre: 4, quien: 'Padre Julián Arce' }
+];
+
+const SOCIOS = [
+  { id: 's1', n: 'Unión Servicios de Mantenimiento', modo: 'Licitación conjunta', d: 'Empresa sindicalizada con póliza de $5M. Busca socio MBE para cumplir metas de participación.', cubre: ['sindicato', 'seguro5m'], af: 92, zona: 'Chicago' },
+  { id: 's2', n: 'Grandes Lagos Facility Group', modo: 'Subcontrato', d: 'Ganó 3 edificios de oficinas y necesita cuadrilla nocturna. Subcontrato estimado en $180,000 al año.', cubre: [], af: 89, zona: 'Oak Brook' },
+  { id: 's3', n: 'Altura Segura Vidrios', modo: 'Licitación conjunta', d: 'Especialistas en vidrios de altura con andamios propios. Nos refieren la limpieza interior.', cubre: ['seguro5m'], af: 84, zona: 'Chicago', tipo: 'ventanas' },
+  { id: 's4', n: 'Verde Urbano Jardinería', modo: 'Complementario', d: 'Mantiene áreas verdes de 22 edificios. Propone vender paquete de limpieza y jardinería.', cubre: [], af: 81, zona: 'Berwyn' },
+  { id: 's5', n: 'Custodia Seguridad Privada', modo: 'Complementario', d: 'Los administradores piden limpieza y vigilancia en un solo contrato. Comparten 9 clientes potenciales.', cubre: [], af: 77, zona: 'Chicago' },
+  { id: 's6', n: 'Clima Total HVAC', modo: 'Referidos', d: 'Intercambio de referidos: ellos entran a los edificios antes que nadie cuando hay mudanza.', cubre: [], af: 72, zona: 'Skokie' },
+  { id: 's7', n: 'Control Plagas Midwest', modo: 'Complementario', d: 'Clínicas y restaurantes exigen ambos servicios. Ofrecen comisión cruzada del 8%.', cubre: [], af: 70, zona: 'Evanston', scan: 1 }
+];
+
+const E_CAND = ['Nuevo', 'Entrevista', 'Oferta', 'Contratado'];
+const VACANTES = [{ p: 'Técnico de limpieza nocturno', n: 4, z: 'Loop y West Loop' }, { p: 'Supervisor de zona', n: 1, z: 'Suburbios oeste' }, { p: 'Especialista en pisos', n: 2, z: 'Toda el área' }];
+const CANDIDATOS = [
+  { id: 'k1', n: 'Araceli Montoya', p: 'Supervisor de zona', exp: 7, zona: 'Cicero', disp: 'Tardes y noches', bil: 1, af: 95, pre: 1 },
+  { id: 'k2', n: 'Rogelio Tapia', p: 'Especialista en pisos', exp: 5, zona: 'Pilsen', disp: 'Noches', bil: 1, af: 90, pre: 2 },
+  { id: 'k3', n: 'Denise Whitaker', p: 'Técnico de limpieza nocturno', exp: 3, zona: 'Bronzeville', disp: 'Noches', bil: 0, af: 87, pre: 0 },
+  { id: 'k4', n: 'Fernando Ibarra', p: 'Técnico de limpieza nocturno', exp: 2, zona: 'Little Village', disp: 'Noches y fines de semana', bil: 1, af: 85, pre: 0 },
+  { id: 'k5', n: 'Guadalupe Serrano', p: 'Técnico de limpieza nocturno', exp: 6, zona: 'Berwyn', disp: 'Tardes', bil: 1, af: 82, pre: 1 },
+  { id: 'k6', n: 'Marcus Oyelaran', p: 'Especialista en pisos', exp: 4, zona: 'Oak Park', disp: 'Noches', bil: 0, af: 78, pre: 0 },
+  { id: 'k7', n: 'Brenda Solís', p: 'Técnico de limpieza nocturno', exp: 1, zona: 'Back of the Yards', disp: 'Flexible', bil: 1, af: 76, pre: 0, scan: 1 },
+  { id: 'k8', n: 'Tadeusz Nowicki', p: 'Supervisor de zona', exp: 9, zona: 'Schaumburg', disp: 'Días', bil: 0, af: 73, pre: 0, scan: 1 }
+];
+
+const PROVEEDORES = [
+  { id: 'v1', n: 'Químicos del Medio Oeste', cat: 'Químicos y desinfectantes', cal: 4.8, ent: '24 h', est: 'Activo', nota: 'Línea Green Seal completa' },
+  { id: 'v2', n: 'Papelera Tres Ríos', cat: 'Papel e higiénicos', cal: 4.6, ent: '48 h', est: 'Activo', nota: 'Descuento del 6% por volumen' },
+  { id: 'v3', n: 'Equipos Pulimax', cat: 'Maquinaria de pisos', cal: 4.7, ent: '3 días', est: 'Activo', nota: 'Renta y venta de pulidoras' },
+  { id: 'v4', n: 'Uniformes Lakeshore', cat: 'Uniformes y equipo de protección', cal: 4.4, ent: '5 días', est: 'Activo', nota: 'Bordado incluido' },
+  { id: 'v5', n: 'EcoBrillo Supply', cat: 'Químicos y desinfectantes', cal: 4.5, ent: '24 h', est: 'En revisión', nota: 'Ofrece 11% menos que el proveedor actual' },
+  { id: 'v6', n: 'Taller Rueda Libre', cat: 'Mantenimiento de camionetas', cal: 4.3, ent: 'Mismo día', est: 'Nuevo registro', nota: 'Se registró desde el sitio público' },
+  { id: 'v7', n: 'Microfibras Aurora', cat: 'Paños y trapeadores', cal: 4.9, ent: '48 h', est: 'Nuevo registro', nota: 'Se registró desde el sitio público' }
+];
+const INSUMOS = [
+  { id: 'i1', n: 'Desinfectante concentrado', u: 'galones', stock: 18, min: 30, max: 120, prov: 'Químicos del Medio Oeste' },
+  { id: 'i2', n: 'Papel higiénico jumbo', u: 'cajas', stock: 64, min: 40, max: 150, prov: 'Papelera Tres Ríos' },
+  { id: 'i3', n: 'Bolsas de basura 55 gal', u: 'cajas', stock: 22, min: 25, max: 90, prov: 'Papelera Tres Ríos' },
+  { id: 'i4', n: 'Paños de microfibra', u: 'paquetes', stock: 85, min: 30, max: 110, prov: 'Microfibras Aurora' },
+  { id: 'i5', n: 'Cera para pisos', u: 'cubetas', stock: 31, min: 15, max: 60, prov: 'Equipos Pulimax' }
+];
+
+const SITIOS = {
+  a: { n: 'Edificio municipal', dir: '118 N. Calle Demo, Loop', h: '6:00 pm – 11:00 pm', c: '#1f7a63' },
+  b: { n: 'Clínicas del Suroeste', dir: '2140 S. Avenida Ejemplo, Pilsen', h: '7:00 pm – 10:30 pm', c: '#2c6e9b' },
+  c: { n: 'Banco Pradera (ruta)', dir: '9 sucursales · inicia en 4500 W. Calle Muestra', h: '5:30 pm – 10:00 pm', c: '#9b6a2c' },
+  d: { n: 'Plaza Veintiséis', dir: '3300 W. Calle Veintiséis, Little Village', h: '5:00 am – 8:30 am', c: '#8a4a7d' },
+  e: { n: 'Despacho Halsted', dir: '820 W. Bulevar Prueba, West Loop', h: '8:00 pm – 11:00 pm', c: '#b0563b' }
+};
+const EMPLEADOS = [
+  { id: 'e1', n: 'Marisol Vega', r: 'Supervisora', h: ['a', 'a', 'a', 'a', 'a', '', ''] },
+  { id: 'e2', n: 'Tomás Rincón', r: 'Técnico', h: ['a', 'a', 'a', 'a', 'a', '', ''] },
+  { id: 'e3', n: 'Daniela Ochoa', r: 'Técnica', h: ['b', 'b', 'b', 'b', 'b', 'd', ''] },
+  { id: 'e4', n: 'Iván Paredes', r: 'Técnico', h: ['b', 'b', '', 'b', 'b', 'd', 'd'] },
+  { id: 'e5', n: 'Rosa Elena Cruz', r: 'Supervisora', h: ['c', 'c', 'c', 'c', 'c', '', ''] },
+  { id: 'e6', n: 'Kevin Aldana', r: 'Chofer y técnico', h: ['c', 'c', 'c', 'c', 'c', '', ''] },
+  { id: 'e7', n: 'Lucía Mendieta', r: 'Especialista en pisos', h: ['', 'e', 'e', '', 'e', 'a', 'd'] },
+  { id: 'e8', n: 'Samuel Okafor', r: 'Técnico', h: ['d', 'd', 'e', 'e', 'd', 'd', ''] }
+];
+const AUTOS = [
+  { id: 'u1', n: 'Horario semanal', d: 'Cada domingo a las 6:00 pm envía el horario por correo y lo agrega al calendario de cada empleado.' },
+  { id: 'u2', n: 'Recordatorio de turno', d: 'Mensaje de texto 12 horas antes con la dirección, la hora y la lista de tareas.' },
+  { id: 'u3', n: 'Alerta de contrato', d: 'Avisa a la dirección cuando aparece una licitación con match mayor a 80%.' },
+  { id: 'u4', n: 'Seguimiento a prospectos', d: 'Si un prospecto no contesta en 3 días, envía un segundo correo.' },
+  { id: 'u5', n: 'Pedido de insumos', d: 'Cuando un insumo baja del mínimo, genera la orden de compra al proveedor.' },
+  { id: 'u6', n: 'Bienvenida a nuevo empleado', d: 'Envía documentos, uniforme asignado y primer turno al contratar.' },
+  { id: 'u7', n: 'Reporte al cliente', d: 'Después de cada visita envía al cliente el reporte con fotos del supervisor.', off: 1 }
+];
+const MSGS = [
+  { c: 'SMS', a: 'Tomás Rincón', t: 'Recordatorio: hoy 6:00 pm en Edificio municipal, 118 N. Calle Demo.', h: 'Hoy 6:00 am' },
+  { c: 'Correo', a: 'Dr. Óscar Benavides', t: 'Seguimiento: propuesta de limpieza para Centro Médico Ashland', h: 'Hoy 8:15 am' },
+  { c: 'Calendario', a: '8 empleados', t: 'Turnos de la semana agregados al calendario', h: 'Dom 6:00 pm' },
+  { c: 'Correo', a: 'Químicos del Medio Oeste', t: 'Orden de compra: 60 galones de desinfectante concentrado', h: 'Ayer 4:40 pm' },
+  { c: 'Correo', a: 'Dirección', t: 'Nueva licitación con match de 93%: edificio municipal en el Loop', h: 'Ayer 9:02 am' },
+  { c: 'SMS', a: 'Araceli Montoya', t: 'Su entrevista para Supervisor de zona es el jueves a las 10:00 am.', h: 'Lun 2:30 pm' },
+  { c: 'Correo', a: 'Banco Pradera', t: 'Reporte de visita con fotos · 9 sucursales', h: 'Lun 11:10 pm' }
+];
+const NIVELES = [['Bronce', 0], ['Plata', 500], ['Oro', 1200], ['Platino', 2500]];
+const INSIGNIAS = [
+  ['radar', '📡', 'Radar encendido', 'Corre un escaneo 360', s => s.escaneado],
+  ['ojo', '🔍', 'Ojo clínico', 'Verifica un contrato', s => s.n.verif >= 1],
+  ['fraude', '🛡️', 'Cazafraudes', 'Detecta un contrato falso', s => s.n.fraude >= 1],
+  ['pelea', '📝', 'En la pelea', 'Envía 2 propuestas', s => s.n.prop >= 2],
+  ['cierre', '🏆', 'Cierre de oro', 'Gana un contrato', s => s.n.gan >= 1],
+  ['conector', '🤝', 'Conector', 'Contacta 2 socios', s => s.n.soc >= 2],
+  ['recluta', '🧑‍🤝‍🧑', 'Reclutador', 'Avanza 3 candidatos', s => s.n.cand >= 3],
+  ['reloj', '⏰', 'Reloj suizo', 'Envía el horario semanal', s => s.horario]
+];
+const PREMIOS = [['Almuerzo para la cuadrilla', 400], ['Bono de $100', 800], ['Medio día libre pagado', 1200], ['Curso de certificación pagado', 2000]];
+const TABLA = [['Marisol Vega', 1280], ['Rosa Elena Cruz', 960], ['Daniela Ochoa', 720], ['Tomás Rincón', 410]];
+
+/* ============ ESTADO ============ */
+const KEY = 'ingrid360-demo-v1';
+const base = () => ({ vista: 'panel', escaneado: false, horario: false, puntos: 340, saldo: 340, et: {}, cli: {}, cand: {}, soc: {}, prov: {}, rec: {}, ped: {}, autos: {}, canjes: [], msgs: [], n: { verif: 0, fraude: 0, prop: 0, gan: 0, soc: 0, cand: 0 }, log: [['Propuesta enviada: Clínicas comunitarias', 50], ['Contrato ganado: Banco Pradera', 200], ['Escaneo semanal completado', 30]] });
+let S = base();
+try { const g = JSON.parse(localStorage.getItem(KEY)); if (g && g.n) S = Object.assign(base(), g); } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+let V = null; // verificación en curso
+
+/* ============ UTILIDADES ============ */
+const $ = s => document.querySelector(s);
+const usd = n => '$' + Math.round(n).toLocaleString('en-US');
+const num = n => n.toLocaleString('en-US');
+const vis = arr => arr.filter(x => !x.scan || S.escaneado);
+const ini = n => n.split(' ').slice(0, 2).map(w => w[0]).join('');
+const etapa = c => S.et[c.id] || c.pre || 'nuevo';
+const color = p => p >= 80 ? 'var(--green)' : p >= 60 ? 'var(--gold)' : 'var(--red)';
+const ring = p => `<div class="ring" style="--p:${p};--c:${color(p)}"><b>${p}</b></div>`;
+const cubierto = r => PERFIL.certs.includes(r);
+const socioPara = r => SOCIOS.find(s => s.cubre.includes(r));
+
+function score(c, conSocio) {
+  const ok = r => cubierto(r) || (conSocio && socioPara(r));
+  const partes = [
+    ['Tipo de limpieza', 45, PERFIL.nivel[c.tipo]],
+    ['Tamaño vs. capacidad', 20, c.pies <= PERFIL.capacidad ? 1 : Math.max(0, 1 - (c.pies - PERFIL.capacidad) / PERFIL.capacidad)],
+    ['Requisitos cumplidos', 20, c.req.length ? c.req.filter(ok).length / c.req.length : 1],
+    ['Distancia', 10, c.millas <= 10 ? 1 : c.millas <= PERFIL.radio ? 0.6 : 0.2],
+    ['Tiempo para preparar', 5, c.dias >= 10 ? 1 : c.dias >= 5 ? 0.6 : 0.3]
+  ];
+  return { partes, total: Math.round(partes.reduce((a, p) => a + p[1] * p[2], 0)) };
+}
+function toast(html) { const t = $('#toast'); t.innerHTML = html; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 2600); }
+function pts(n, txt) {
+  const antes = INSIGNIAS.filter(i => i[4](S)).length;
+  S.puntos += n; S.saldo += n; S.log.unshift([txt, n]);
+  const ahora = INSIGNIAS.filter(i => i[4](S));
+  toast(ahora.length > antes ? `<b>+${n} pts</b> · Nueva insignia: ${ahora[ahora.length - 1][2]}` : `<b>+${n} pts</b> · ${txt}`);
+  save();
+}
+function msg(c, a, t) { S.msgs.unshift({ c, a, t, h: 'Ahora' }); }
+function modal(html) { $('#modal').innerHTML = `<button class="x" data-a="cerrar">✕</button>` + html; $('#veil').classList.add('on'); }
+function cerrar() { $('#veil').classList.remove('on'); V = null; }
+const estadoChip = e => ({ nuevo: '<span class="chip a">Sin verificar</span>', verificado: '<span class="chip g">Verificado</span>', propuesta: '<span class="chip b">Propuesta enviada</span>', ganado: '<span class="chip d">Ganado</span>', descartado: '<span class="chip r">Descartado · alerta</span>' }[e]);
+const hoyIdx = (new Date().getDay() + 6) % 7;
+const DIAS = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+const fechaDia = i => { const d = new Date(); d.setDate(d.getDate() - hoyIdx + i); return d.getDate(); };
+
+/* ============ VISTAS ============ */
+const NAV = [
+  ['', 'Resumen'], ['panel', '◎', 'Panel 360'],
+  ['', 'Crecer'], ['contratos', '▤', 'Contratos', () => vis(CONTRATOS).length], ['clientes', '◈', 'Clientes', () => vis(CLIENTES).length], ['alianzas', '⬡', 'Alianzas', () => vis(SOCIOS).length],
+  ['', 'Operar'], ['agenda', '▦', 'Agenda y turnos'], ['talento', '☺', 'Talento', () => vis(CANDIDATOS).length], ['proveedores', '⬒', 'Proveedores', () => PROVEEDORES.length], ['mensajes', '✉', 'Automatización'],
+  ['', 'Equipo'], ['recompensas', '★', 'Recompensas'], ['perfil', '◐', 'Perfil de empresa']
+];
+const head = (t, s, extra = '') => `<span class="demo">Demo · todos los datos son ficticios</span><div class="top"><div><h1>${t}</h1><p class="sub">${s}</p></div><div class="acts">${extra}</div></div>`;
+const btnScan = () => `<button class="btn gold" data-a="scan">${S.escaneado ? '↻ Volver a escanear' : '📡 Escaneo 360'}</button>`;
+
+const VISTAS = {
+  panel() {
+    const cs = vis(CONTRATOS).filter(c => etapa(c) !== 'descartado');
+    const top = cs.map(c => [c, score(c).total]).sort((a, b) => b[1] - a[1]).slice(0, 4);
+    const turnosHoy = Object.keys(SITIOS).map(k => [SITIOS[k], EMPLEADOS.filter(e => e.h[hoyIdx] === k)]).filter(x => x[1].length);
+    const turnos = EMPLEADOS.reduce((a, e) => a + e.h.filter(Boolean).length, 0);
+    return head('Buenos días, Ingrid', 'Todo lo que pasa en la empresa, en una sola pantalla.', btnScan()) + `
+    <div class="grid k6">
+      <div class="card kpi"><small>Contratos en la mira</small><b>${usd(cs.reduce((a, c) => a + c.valor, 0) / 1000)}K</b><em>${cs.length} oportunidades</em></div>
+      <div class="card kpi"><small>Prospectos</small><b>${vis(CLIENTES).length}</b><em>${usd(vis(CLIENTES).reduce((a, c) => a + c.valor, 0) / 1000)}K potencial</em></div>
+      <div class="card kpi"><small>Socios posibles</small><b>${vis(SOCIOS).length}</b><em>3 formas de aliarse</em></div>
+      <div class="card kpi"><small>Candidatos</small><b>${vis(CANDIDATOS).length}</b><em>7 vacantes abiertas</em></div>
+      <div class="card kpi"><small>Turnos esta semana</small><b>${turnos}</b><em>${EMPLEADOS.length} empleados</em></div>
+      <div class="card kpi"><small>Puntos del equipo</small><b>${num(S.puntos)}</b><em>Nivel ${nivel()[0]}</em></div>
+    </div>
+    <div class="grid c4" style="margin-top:16px">
+      ${[['contratos', '▤', 'Busca contratos', 'Licitaciones verificadas y con match'], ['clientes', '◈', 'Busca clientes', 'Empresas con señales de compra'], ['alianzas', '⬡', 'Busca socios', 'Subcontratos y licitación conjunta'], ['talento', '☺', 'Busca empleados', 'Candidatos para tus vacantes'], ['proveedores', '⬒', 'Busca proveedores', 'Registro, precios e inventario'], ['agenda', '▦', 'Coordina turnos', 'Horarios, direcciones y avisos'], ['mensajes', '✉', 'Automatiza', 'Correos, SMS y calendario'], ['recompensas', '★', 'Motiva al equipo', 'Puntos, niveles y premios']].map(m => `<button class="card mod" data-a="ir" data-id="${m[0]}"><div class="ic">${m[1]}</div><h3>${m[2]}</h3><p>${m[3]}</p></button>`).join('')}
+    </div>
+    <div class="grid c2" style="margin-top:16px">
+      <div class="card"><h2>Mejores oportunidades</h2>${top.map(([c, p]) => `<div class="row">${ring(p)}<div class="body"><h3>${c.t}</h3><p>${c.e} · ${usd(c.valor)} al año</p></div><button class="btn sm line" data-a="ver" data-id="${c.id}">Ver</button></div>`).join('')}</div>
+      <div class="card"><h2>Hoy en la operación</h2>${turnosHoy.map(([s, es]) => `<div class="row"><div class="av" style="background:${s.c};color:#fff">${es.length}</div><div class="body"><h3>${s.n}</h3><p>${s.h} · ${s.dir}</p><p>${es.map(e => e.n).join(', ')}</p></div></div>`).join('')}
+        <h2 style="margin-top:18px">Últimos avisos automáticos</h2>${S.msgs.concat(MSGS).slice(0, 3).map(m => `<div class="row"><span class="chip ${m.c === 'SMS' ? 'g' : m.c === 'Correo' ? 'b' : 'a'}">${m.c}</span><div class="body"><p><b>${m.a}</b> · ${m.t}</p></div></div>`).join('')}
+      </div>
+    </div>`;
+  },
+
+  contratos() {
+    const f = S.fTipo || '';
+    const cs = vis(CONTRATOS).filter(c => !f || c.tipo === f).map(c => [c, score(c).total]).sort((a, b) => b[1] - a[1]);
+    const cols = [['nuevo', 'Encontrados'], ['verificado', 'Verificados'], ['propuesta', 'Propuesta enviada'], ['ganado', 'Ganados']];
+    return head('Contratos', 'La plataforma busca licitaciones, las compara con lo que sabe hacer la empresa y revisa que sean reales.', btnScan()) + `
+    <div class="tools"><select data-c="fTipo"><option value="">Todos los tipos de limpieza</option>${Object.keys(TIPOS).map(k => `<option value="${k}" ${f === k ? 'selected' : ''}>${TIPOS[k]}</option>`).join('')}</select><span class="chip">${cs.length} resultados · ordenados por match</span></div>
+    <div class="card">${cs.map(([c, p]) => `<div class="row">${ring(p)}<div class="body"><h3>${c.t}</h3><p>${c.e} · ${c.f}</p><div class="meta"><span class="chip">${TIPOS[c.tipo]}</span><span class="chip">${num(c.pies)} pies²</span><span class="chip">${usd(c.valor)} / año</span><span class="chip ${c.dias < 10 ? 'r' : ''}">Cierra en ${c.dias} días</span>${estadoChip(etapa(c))}</div></div><div class="acts"><button class="btn sm" data-a="ver" data-id="${c.id}">Abrir</button></div></div>`).join('')}</div>
+    <h2 style="margin-top:26px">Embudo de contratos</h2>
+    <div class="kan">${cols.map(([k, n]) => { const l = vis(CONTRATOS).filter(c => etapa(c) === k); return `<div class="col"><h3>${n}<span>${l.length}</span></h3>${l.map(c => `<div class="tile" data-a="ver" data-id="${c.id}"><b>${c.t.split(' · ')[0]}</b><small>${usd(c.valor)} · match ${score(c).total}</small></div>`).join('') || '<small style="color:var(--muted);padding:6px">Vacío</small>'}</div>`; }).join('')}</div>`;
+  },
+
+  clientes() {
+    return head('Clientes', 'Empresas del área que muestran señales de necesitar un servicio de limpieza, antes de que publiquen una licitación.', btnScan()) + `
+    <div class="card">${vis(CLIENTES).sort((a, b) => b.af - a.af).map(c => { const e = S.cli[c.id] ?? c.pre; return `<div class="row">${ring(c.af)}<div class="body"><h3>${c.n}</h3><p>${c.quien} · ${c.zona}</p><div class="meta"><span class="chip a">⚡ ${c.senal}</span><span class="chip">${TIPOS[c.tipo]}</span><span class="chip">${num(c.pies)} pies²</span><span class="chip">${usd(c.valor)} / año</span></div><div class="steps" title="${E_CLI[e]}">${E_CLI.map((_, i) => `<i class="${i <= e ? 'on' : ''}"></i>`).join('')}</div></div><div class="acts"><span class="chip ${e === 4 ? 'd' : 'g'}">${E_CLI[e]}</span>${e < 4 ? `<button class="btn sm" data-a="cli" data-id="${c.id}">${['Redactar correo', 'Agendar visita', 'Enviar propuesta', 'Marcar como cliente'][e]}</button>` : ''}</div></div>`; }).join('')}</div>`;
+  },
+
+  alianzas() {
+    return head('Alianzas', 'Negocio de lado, no solo hacia arriba: empresas con las que conviene subcontratar, licitar en equipo u ofrecer paquetes.', btnScan()) + `
+    <div class="grid c3" style="margin-bottom:16px">
+      <div class="card kpi"><small>Subcontratos disponibles</small><b>$180K</b><em>1 contratista busca cuadrilla</em></div>
+      <div class="card kpi"><small>Contratos que se abren con un socio</small><b>${vis(CONTRATOS).filter(c => c.req.some(r => !cubierto(r) && socioPara(r))).length}</b><em>requisitos que hoy no cumplimos</em></div>
+      <div class="card kpi"><small>Solicitudes desde el sitio público</small><b>5</b><em>esta semana</em></div>
+    </div>
+    <div class="card">${vis(SOCIOS).map(s => { const hecho = S.soc[s.id]; return `<div class="row">${ring(s.af)}<div class="body"><h3>${s.n}</h3><p>${s.d}</p><div class="meta"><span class="chip d">${s.modo}</span><span class="chip">${s.zona}</span>${s.cubre.map(r => `<span class="chip g">Aporta: ${REQ[r]}</span>`).join('')}</div></div><div class="acts">${hecho ? '<span class="chip g">Informes solicitados</span>' : `<button class="btn sm" data-a="socio" data-id="${s.id}">Pedir informes</button>`}</div></div>`; }).join('')}</div>`;
+  },
+
+  talento() {
+    return head('Talento', 'Candidatos que encajan con las vacantes abiertas, por experiencia, zona y horario.', btnScan()) + `
+    <div class="grid c3" style="margin-bottom:16px">${VACANTES.map(v => `<div class="card kpi"><small>${v.z}</small><b>${v.n}</b><em>${v.p}</em></div>`).join('')}</div>
+    <div class="card">${vis(CANDIDATOS).sort((a, b) => b.af - a.af).map(c => { const e = S.cand[c.id] ?? c.pre; return `<div class="row"><div class="av">${ini(c.n)}</div><div class="body"><h3>${c.n}</h3><p>${c.p} · ${c.exp} años de experiencia</p><div class="meta"><span class="chip">${c.zona}</span><span class="chip">${c.disp}</span>${c.bil ? '<span class="chip b">Bilingüe</span>' : ''}<span class="chip g">Afinidad ${c.af}%</span></div><div class="steps">${E_CAND.map((_, i) => `<i class="${i <= e ? 'on' : ''}"></i>`).join('')}</div></div><div class="acts"><span class="chip ${e === 3 ? 'd' : 'a'}">${E_CAND[e]}</span>${e < 3 ? `<button class="btn sm" data-a="cand" data-id="${c.id}">${['Agendar entrevista', 'Hacer oferta', 'Contratar'][e]}</button>` : ''}</div></div>`; }).join('')}</div>`;
+  },
+
+  proveedores() {
+    return head('Proveedores', 'Quién surte a la empresa, quién quiere surtirla y cuánto queda en bodega.') + `
+    <div class="grid c2">
+      <div class="card"><h2>Directorio y nuevos registros</h2>${PROVEEDORES.map(p => { const est = S.prov[p.id] || p.est; return `<div class="row"><div class="av">${ini(p.n)}</div><div class="body"><h3>${p.n}</h3><p>${p.cat} · ${p.nota}</p><div class="meta"><span class="chip">★ ${p.cal}</span><span class="chip">Entrega: ${p.ent}</span><span class="chip ${est === 'Activo' ? 'g' : 'a'}">${est}</span></div></div>${est !== 'Activo' ? `<button class="btn sm" data-a="prov" data-id="${p.id}">Aprobar</button>` : ''}</div>`; }).join('')}</div>
+      <div class="card"><h2>Inventario en bodega</h2>${INSUMOS.map(i => { const st = i.stock + (S.ped[i.id] ? i.max - i.stock : 0), bajo = st < i.min; return `<div class="row"><div class="body"><h3>${i.n}</h3><p>${st} ${i.u} · mínimo ${i.min} · ${i.prov}</p><div class="bar ${bajo ? 'low' : ''}" style="margin-top:8px"><i style="width:${Math.min(100, st / i.max * 100)}%"></i></div></div>${bajo ? `<button class="btn sm red" data-a="pedir" data-id="${i.id}">Pedir</button>` : S.ped[i.id] ? '<span class="chip g">Pedido enviado</span>' : '<span class="chip">Suficiente</span>'}</div>`; }).join('')}</div>
+    </div>`;
+  },
+
+  agenda() {
+    return head('Agenda y turnos', 'Quién trabaja, dónde y a qué hora. Cada empleado recibe su horario, la dirección y un recordatorio.', `<button class="btn gold" data-a="horario" ${S.horario ? 'disabled' : ''}>${S.horario ? '✓ Horario enviado' : '✉ Enviar horario de la semana'}</button>`) + `
+    <div class="card scroll"><table class="sched"><tr><th>Empleado</th>${DIAS.map((d, i) => `<th class="${i === hoyIdx ? 'hoy' : ''}">${d} ${fechaDia(i)}</th>`).join('')}</tr>
+      ${EMPLEADOS.map(e => `<tr><td class="who">${e.n}<small>${e.r}</small></td>${e.h.map((k, i) => k ? `<td><button class="shift" style="background:${SITIOS[k].c}" data-a="turno" data-id="${e.id}-${i}"><b>${SITIOS[k].n}</b><small>${SITIOS[k].h.split(' – ')[0]} ${S.rec[e.id + '-' + i] || S.horario ? '· ✓ avisado' : ''}</small></button></td>` : '<td><div class="off">Descanso</div></td>').join('')}</tr>`).join('')}
+    </table></div>
+    <div class="grid c3" style="margin-top:16px">${Object.values(SITIOS).slice(0, 3).map(s => `<div class="card"><span class="chip" style="background:${s.c};color:#fff">${s.h}</span><h3 style="margin-top:8px">${s.n}</h3><p style="color:var(--muted)">${s.dir}</p></div>`).join('')}</div>`;
+  },
+
+  mensajes() {
+    return head('Automatización', 'Lo que el sistema hace solo: correos, mensajes de texto y calendario.') + `
+    <div class="grid c2">
+      <div class="card"><h2>Reglas automáticas</h2>${AUTOS.map(a => { const on = S.autos[a.id] ?? !a.off; return `<div class="row"><div class="body"><h3>${a.n}</h3><p>${a.d}</p></div><button class="toggle ${on ? 'on' : ''}" data-a="auto" data-id="${a.id}" aria-label="Activar ${a.n}"></button></div>`; }).join('')}</div>
+      <div class="card"><h2>Bitácora de envíos</h2>${S.msgs.concat(MSGS).slice(0, 12).map(m => `<div class="row"><span class="chip ${m.c === 'SMS' ? 'g' : m.c === 'Correo' ? 'b' : 'a'}">${m.c}</span><div class="body"><h3>${m.a}</h3><p>${m.t}</p></div><small style="color:var(--muted);white-space:nowrap">${m.h}</small></div>`).join('')}</div>
+    </div>`;
+  },
+
+  recompensas() {
+    const [nom, , sig, pct] = nivel();
+    const tabla = TABLA.concat([['Tú (demo)', S.puntos]]).sort((a, b) => b[1] - a[1]);
+    return head('Recompensas', 'Cada acción que hace crecer a la empresa suma puntos. Los puntos suben de nivel al equipo y se cambian por premios.') + `
+    <div class="grid c2">
+      <div class="card level"><small style="letter-spacing:.2em;text-transform:uppercase;color:#b9c9c4">Nivel ${nom}</small><div class="pts">${num(S.puntos)} pts</div><div class="bar"><i style="width:${pct}%"></i></div><small style="color:#b9c9c4">${sig ? `Faltan ${num(sig[1] - S.puntos)} puntos para ${sig[0]}` : 'Nivel máximo alcanzado'} · Saldo para canjear: ${num(S.saldo)}</small></div>
+      <div class="card"><h2>Tabla del equipo</h2>${tabla.map((t, i) => `<div class="line"><span class="dot ${t[0].startsWith('Tú') ? 'ok' : ''}">${i + 1}</span>${t[0]}<span class="v">${num(t[1])} pts</span></div>`).join('')}</div>
+    </div>
+    <div class="card" style="margin-top:16px"><h2>Insignias</h2><div class="badges">${INSIGNIAS.map(i => `<div class="bdg ${i[4](S) ? 'on' : ''}"><span>${i[1]}</span><b>${i[2]}</b><small>${i[3]}</small></div>`).join('')}</div></div>
+    <div class="grid c2" style="margin-top:16px">
+      <div class="card"><h2>Premios</h2>${PREMIOS.map((p, i) => `<div class="row"><div class="body"><h3>${p[0]}</h3><p>${num(p[1])} puntos</p></div>${S.canjes.includes(i) ? '<span class="chip g">Canjeado</span>' : `<button class="btn sm ${S.saldo >= p[1] ? 'gold' : 'line'}" data-a="canje" data-id="${i}" ${S.saldo >= p[1] ? '' : 'disabled'}>Canjear</button>`}</div>`).join('')}</div>
+      <div class="card"><h2>Cómo se ganan</h2>${[['Escaneo 360', 30], ['Verificar un contrato', 20], ['Detectar un contrato falso', 50], ['Enviar una propuesta', 50], ['Ganar un contrato', 200], ['Avanzar un prospecto', 15], ['Contactar a un socio', 25], ['Contratar a un candidato', 60]].map(r => `<div class="line">${r[0]}<span class="v">+${r[1]}</span></div>`).join('')}
+        <h2 style="margin-top:16px">Actividad reciente</h2>${S.log.slice(0, 5).map(l => `<div class="line">${l[0]}<span class="v" style="color:var(--green)">+${l[1]}</span></div>`).join('')}</div>
+    </div>`;
+  },
+
+  perfil() {
+    return head('Perfil de empresa', 'Con estos datos la plataforma calcula el match de cada contrato.') + `
+    <div class="grid c2">
+      <div class="card"><h2>Qué tipo de limpieza hacemos mejor</h2>${Object.keys(TIPOS).map(k => `<div class="line">${TIPOS[k]}<div class="bar ${PERFIL.nivel[k] < 0.5 ? 'low' : PERFIL.nivel[k] < 0.75 ? 'mid' : ''}" style="margin-left:auto"><i style="width:${PERFIL.nivel[k] * 100}%"></i></div><span class="v" style="margin-left:10px;width:42px;text-align:right">${Math.round(PERFIL.nivel[k] * 100)}%</span></div>`).join('')}</div>
+      <div class="card"><h2>Ingrid Cleaning Solutions</h2><p style="color:var(--muted)">Limpieza comercial · Chicago y alrededores · 12 años · 48 empleados</p>
+        <h2 style="margin-top:18px">Certificaciones y requisitos</h2>${Object.keys(REQ).map(r => `<div class="line"><span class="dot ${cubierto(r) ? 'ok' : 'no'}">${cubierto(r) ? '✓' : '✕'}</span>${REQ[r]}${!cubierto(r) && socioPara(r) ? `<span class="v chip g">Lo cubre un socio</span>` : ''}</div>`).join('')}
+        <h2 style="margin-top:18px">Capacidad</h2><div class="line">Tamaño máximo por contrato<span class="v">${num(PERFIL.capacidad)} pies²</span></div><div class="line">Radio de servicio<span class="v">${PERFIL.radio} millas</span></div></div>
+    </div>`;
+  }
+};
+
+function nivel() {
+  let i = 0; NIVELES.forEach((n, k) => { if (S.puntos >= n[1]) i = k; });
+  const sig = NIVELES[i + 1];
+  return [NIVELES[i][0], NIVELES[i][1], sig, sig ? Math.round((S.puntos - NIVELES[i][1]) / (sig[1] - NIVELES[i][1]) * 100) : 100];
+}
+
+/* ============ MODALES ============ */
+function verContrato(id) {
+  const c = CONTRATOS.find(x => x.id === id), sc = score(c), e = etapa(c), falla = c.falla || [];
+  const faltan = c.req.filter(r => !cubierto(r)), conSocio = score(c, true).total;
+  const keys = Object.keys(CHECKS);
+  const chk = keys.map((k, i) => {
+    let cls = '', sym = '·';
+    if (e !== 'nuevo' || (V && V.id === id && i < V.paso)) { const ok = !falla.includes(k); cls = ok ? 'ok' : 'no'; sym = ok ? '✓' : '✕'; }
+    else if (V && V.id === id && i === V.paso) { cls = 'wait'; sym = '…'; }
+    return `<div class="line"><span class="dot ${cls}">${sym}</span>${CHECKS[k]}</div>`;
+  }).join('');
+  let acc = '';
+  if (e === 'nuevo') acc = `<button class="btn gold" data-a="verificar" data-id="${id}" ${V ? 'disabled' : ''}>${V ? 'Verificando…' : 'Verificar contrato'}</button>`;
+  if (e === 'verificado') acc = `<button class="btn gold" data-a="propuesta" data-id="${id}">Enviar propuesta</button>`;
+  if (e === 'propuesta') acc = `<button class="btn gold" data-a="ganar" data-id="${id}">Simular: contrato ganado</button>`;
+  modal(`<div class="meta" style="margin:0 0 10px">${estadoChip(e)}<span class="chip">${TIPOS[c.tipo]}</span><span class="chip">${c.f}</span></div>
+    <h2>${c.t}</h2><p style="color:var(--muted)">${c.e} · ${num(c.pies)} pies² · a ${c.millas} millas · cierra en ${c.dias} días</p>
+    <div class="row" style="border:0;padding-bottom:0">${ring(sc.total)}<div class="body"><h3>Match de ${sc.total} sobre 100</h3><p>Valor estimado: ${usd(c.valor)} al año</p></div></div>
+    <h4>Por qué ese match</h4>${sc.partes.map(p => `<div class="line">${p[0]}<div class="bar ${p[2] < 0.5 ? 'low' : p[2] < 0.8 ? 'mid' : ''}" style="margin-left:auto"><i style="width:${p[2] * 100}%"></i></div><span class="v" style="margin-left:10px;width:54px;text-align:right">${Math.round(p[1] * p[2])} / ${p[1]}</span></div>`).join('')}
+    <h4>Requisitos del contrato</h4>${c.req.length ? c.req.map(r => `<div class="line"><span class="dot ${cubierto(r) ? 'ok' : 'no'}">${cubierto(r) ? '✓' : '✕'}</span>${REQ[r]}</div>`).join('') : '<p style="color:var(--muted)">El anuncio no pide ningún requisito.</p>'}
+    ${faltan.length && conSocio > sc.total ? `<div class="note">🤝 <b>${socioPara(faltan.find(socioPara)).n}</b> cubre lo que falta. En licitación conjunta el match sube a <b>${conSocio}</b>. <a href="#" data-a="ir" data-id="alianzas">Ver alianzas</a></div>` : ''}
+    <h4>Verificación</h4>${chk}
+    ${e === 'descartado' ? '<div class="note r">⚠️ <b>Alerta de fraude.</b> El anuncio no está en una fuente oficial, la empresa no aparece en registros y pide una cuota de "registro" de $750. Se descartó automáticamente.</div>' : ''}
+    <div class="foot">${acc}<button class="btn line" data-a="cerrar">Cerrar</button></div>`);
+}
+function verTurno(key) {
+  const [eid, d] = key.split('-'), e = EMPLEADOS.find(x => x.id === eid), s = SITIOS[e.h[d]];
+  const equipo = EMPLEADOS.filter(x => x.h[d] === e.h[d] && x.id !== eid).map(x => x.n);
+  const ya = S.rec[key] || S.horario;
+  modal(`<div class="meta" style="margin:0 0 10px"><span class="chip" style="background:${s.c};color:#fff">${DIAS[d]} ${fechaDia(+d)}</span><span class="chip">${s.h}</span></div>
+    <h2>${e.n} · ${s.n}</h2><p style="color:var(--muted)">${e.r}</p>
+    <h4>Dirección</h4><p>${s.dir}</p>
+    <h4>Compañeros de turno</h4><p>${equipo.join(', ') || 'Turno individual'}</p>
+    <h4>Mensaje que recibe</h4><div class="mail">Hola ${e.n.split(' ')[0]}, te recordamos tu turno del ${DIAS[d].toLowerCase()} ${fechaDia(+d)}.
+Lugar: ${s.n} — ${s.dir}
+Horario: ${s.h}
+Lleva tu gafete y uniforme. Si no puedes asistir, responde a este mensaje.</div>
+    <div class="foot"><button class="btn gold" data-a="recordar" data-id="${key}" ${ya ? 'disabled' : ''}>${ya ? '✓ Recordatorio enviado' : 'Enviar recordatorio'}</button><button class="btn line" data-a="cerrar">Cerrar</button></div>`);
+}
+function correoCliente(c) {
+  modal(`<span class="chip b">Borrador generado</span><h2 style="margin-top:8px">Correo para ${c.n}</h2>
+    <h4>Para</h4><p>${c.quien}</p>
+    <h4>Mensaje</h4><div class="mail">Asunto: Limpieza para sus ${num(c.pies)} pies² en ${c.zona}
+
+Hola ${c.quien.split(',')[0].split(' ').slice(0, 2).join(' ')}:
+
+Soy Ingrid, de Ingrid Cleaning Solutions. Atendemos ${TIPOS[c.tipo].toLowerCase()} en ${c.zona} y zonas cercanas, con personal verificado y seguro por $2 millones.
+
+¿Le parece si pasamos 20 minutos esta semana a conocer el espacio? Le dejo una propuesta de precio fijo al día siguiente.
+
+Saludos,
+Ingrid · (312) 555-0142</div>
+    <div class="foot"><button class="btn gold" data-a="cliEnviar" data-id="${c.id}">Enviar correo</button><button class="btn line" data-a="cerrar">Cancelar</button></div>`);
+}
+function escanear() {
+  let i = 0;
+  const pinta = () => modal(`<h2>Escaneo 360 en curso</h2><p style="color:var(--muted)">Buscando contratos, clientes, socios y candidatos en el área de Chicago.</p><ul class="scan" style="margin-top:14px">${FUENTES.map((f, k) => `<li><span class="dot ${k < i ? 'ok' : k === i ? 'wait' : ''}">${k < i ? '✓' : '…'}</span>${f}</li>`).join('')}</ul>`);
+  pinta();
+  const t = setInterval(() => {
+    i++;
+    if (i < FUENTES.length) return pinta();
+    clearInterval(t);
+    const primera = !S.escaneado; S.escaneado = true;
+    modal(`<h2>Escaneo terminado</h2><p style="color:var(--muted)">${primera ? 'Esto es lo nuevo que encontró la plataforma:' : 'No hay novedades desde el último escaneo.'}</p>
+      ${primera ? `<div class="grid c4" style="margin-top:16px;grid-template-columns:1fr 1fr">${[['contratos', CONTRATOS, 'contratos nuevos'], ['clientes', CLIENTES, 'prospectos nuevos'], ['alianzas', SOCIOS, 'socio nuevo'], ['talento', CANDIDATOS, 'candidatos nuevos']].map(x => `<button class="card mod kpi" data-a="ir" data-id="${x[0]}"><b>${x[1].filter(y => y.scan).length}</b><small>${x[2]}</small></button>`).join('')}</div><div class="note r">⚠️ Un contrato parece fraudulento. Ábrelo y verifícalo.</div>` : ''}
+      <div class="foot"><button class="btn gold" data-a="ir" data-id="contratos">Ver contratos</button><button class="btn line" data-a="cerrar">Cerrar</button></div>`);
+    if (primera) { msg('Correo', 'Dirección', 'Escaneo 360: 7 contratos, 2 prospectos, 1 socio y 2 candidatos nuevos'); pts(30, 'Escaneo 360 completado'); }
+    render(true);
+  }, 420);
+}
+
+/* ============ ACCIONES ============ */
+const ACC = {
+  ir(id) { cerrar(); S.vista = id; save(); render(); scrollTo(0, 0); },
+  cerrar, scan: escanear, ver: verContrato, turno: verTurno,
+  reset() { S = base(); save(); render(); toast('Demo reiniciada'); },
+  verificar(id) {
+    V = { id, paso: 0 }; verContrato(id);
+    const t = setInterval(() => {
+      if (!V) return clearInterval(t);
+      V.paso++;
+      if (V.paso < 5) return verContrato(id);
+      clearInterval(t); V = null;
+      const c = CONTRATOS.find(x => x.id === id), malo = !!c.falla;
+      S.et[id] = malo ? 'descartado' : 'verificado'; S.n.verif++; if (malo) S.n.fraude++;
+      pts(malo ? 50 : 20, malo ? 'Contrato falso detectado' : 'Contrato verificado');
+      render(true); verContrato(id);
+    }, 420);
+  },
+  propuesta(id) { S.et[id] = 'propuesta'; S.n.prop++; msg('Correo', CONTRATOS.find(c => c.id === id).e, 'Propuesta técnica y económica enviada'); pts(50, 'Propuesta enviada'); render(true); verContrato(id); },
+  ganar(id) { S.et[id] = 'ganado'; S.n.gan++; msg('Calendario', 'Operaciones', 'Reunión de arranque del nuevo contrato agendada'); pts(200, 'Contrato ganado'); render(true); verContrato(id); },
+  cli(id) {
+    const c = CLIENTES.find(x => x.id === id), e = S.cli[id] ?? c.pre;
+    if (e === 0) return correoCliente(c);
+    S.cli[id] = e + 1;
+    if (e === 1) msg('Calendario', c.quien.split(',')[0], 'Visita al inmueble agendada · ' + c.n);
+    if (e === 2) msg('Correo', c.quien.split(',')[0], 'Propuesta de precio fijo · ' + c.n);
+    pts(e === 3 ? 150 : 15, e === 3 ? 'Cliente nuevo: ' + c.n : 'Prospecto avanzó: ' + c.n); render();
+  },
+  cliEnviar(id) { const c = CLIENTES.find(x => x.id === id); S.cli[id] = 1; msg('Correo', c.quien.split(',')[0], 'Presentación de Ingrid Cleaning Solutions · ' + c.n); cerrar(); pts(15, 'Correo enviado a ' + c.n); render(); },
+  socio(id) { const s = SOCIOS.find(x => x.id === id); S.soc[id] = 1; S.n.soc++; msg('Correo', s.n, 'Solicitud de informes para ' + s.modo.toLowerCase()); pts(25, 'Informes pedidos a ' + s.n); render(); },
+  cand(id) {
+    const c = CANDIDATOS.find(x => x.id === id), e = S.cand[id] ?? c.pre;
+    S.cand[id] = e + 1; S.n.cand++;
+    msg(e === 2 ? 'Correo' : 'SMS', c.n, ['Entrevista agendada para ' + c.p, 'Oferta de trabajo enviada', 'Bienvenida: documentos, uniforme y primer turno'][e]);
+    pts(e === 2 ? 60 : 10, ['Entrevista agendada', 'Oferta enviada', 'Contratación'][e] + ': ' + c.n); render();
+  },
+  prov(id) { const p = PROVEEDORES.find(x => x.id === id); S.prov[id] = 'Activo'; msg('Correo', p.n, 'Su registro como proveedor fue aprobado'); pts(15, 'Proveedor aprobado: ' + p.n); render(); },
+  pedir(id) { const i = INSUMOS.find(x => x.id === id); S.ped[id] = 1; msg('Correo', i.prov, `Orden de compra: ${i.max - i.stock} ${i.u} de ${i.n.toLowerCase()}`); pts(5, 'Pedido enviado a ' + i.prov); render(); },
+  horario() { S.horario = true; msg('Calendario', EMPLEADOS.length + ' empleados', 'Turnos de la semana agregados al calendario'); msg('Correo', EMPLEADOS.length + ' empleados', 'Tu horario de la semana con direcciones'); pts(20, 'Horario semanal enviado'); render(); },
+  recordar(key) { const e = EMPLEADOS.find(x => x.id === key.split('-')[0]); S.rec[key] = 1; msg('SMS', e.n, 'Recordatorio de turno con dirección y hora'); pts(5, 'Recordatorio enviado a ' + e.n); render(true); verTurno(key); },
+  auto(id) { const a = AUTOS.find(x => x.id === id); S.autos[id] = !(S.autos[id] ?? !a.off); save(); render(); },
+  canje(i) { const p = PREMIOS[i]; if (S.saldo < p[1]) return; S.saldo -= p[1]; S.canjes.push(+i); save(); render(); toast('Premio canjeado: <b>' + p[0] + '</b>'); }
+};
+
+function render() {
+  $('#nav').innerHTML = NAV.map(n => n[0] === '' ? `<div class="navh">${n[1]}</div>` : `<button class="${S.vista === n[0] ? 'on' : ''}" data-a="ir" data-id="${n[0]}"><i>${n[1]}</i>${n[2]}${n[3] ? `<span>${n[3]()}</span>` : ''}</button>`).join('');
+  $('#main').innerHTML = (VISTAS[S.vista] || VISTAS.panel)();
+}
+document.addEventListener('click', e => {
+  if (e.target.id === 'veil') return cerrar();
+  const el = e.target.closest('[data-a]'); if (!el) return;
+  if (el.tagName === 'A') e.preventDefault();
+  const fn = ACC[el.dataset.a]; if (fn) fn(el.dataset.id);
+});
+document.addEventListener('change', e => { const k = e.target.dataset.c; if (k) { S[k] = e.target.value; render(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrar(); });
+render();
+</script>
+</body>
+</html>
