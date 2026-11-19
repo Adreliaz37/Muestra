@@ -6,25 +6,240 @@
   <title>Bienvenida Caroline</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
     body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 24px;
       font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
       color: #fff;
-      background: linear-gradient(135deg, #0b3d91 0%, #1565c0 50%, #f57c00 100%);
+      background: #05030f;
+      cursor: crosshair;
     }
-    h1 { font-size: clamp(2rem, 7vw, 4.5rem); font-weight: 800; line-height: 1.15; }
-    p { margin-top: 20px; font-size: clamp(1.1rem, 3vw, 1.8rem); opacity: 0.95; }
+    canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+    .glow {
+      position: fixed; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(600px circle at var(--mx, 50%) var(--my, 50%), rgba(0, 229, 255, 0.16), transparent 60%),
+        radial-gradient(900px circle at 85% 110%, rgba(255, 0, 170, 0.22), transparent 60%),
+        radial-gradient(900px circle at 10% -10%, rgba(124, 77, 255, 0.28), transparent 60%);
+    }
+    main {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 24px; pointer-events: none;
+    }
+    .tag {
+      font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+      letter-spacing: 0.45em; text-transform: uppercase;
+      color: #7df9ff; margin-bottom: 22px;
+      padding: 8px 18px; border: 1px solid rgba(125, 249, 255, 0.45); border-radius: 999px;
+      background: rgba(5, 3, 15, 0.45); backdrop-filter: blur(6px);
+      animation: rise 0.9s ease-out both;
+    }
+    h1 {
+      font-size: clamp(2.1rem, 7.5vw, 5.4rem); font-weight: 900; line-height: 1.08;
+      text-shadow: 0 0 40px rgba(124, 77, 255, 0.55);
+      animation: rise 0.9s 0.15s ease-out both;
+    }
+    h1 .name {
+      display: block;
+      background: linear-gradient(90deg, #00e5ff, #b388ff, #ff4fd8, #ffd54f, #00e5ff);
+      background-size: 300% 100%;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      animation: flow 6s linear infinite;
+      filter: drop-shadow(0 0 22px rgba(255, 79, 216, 0.45));
+    }
+    .ganas {
+      margin-top: 26px;
+      font-size: clamp(1.5rem, 5vw, 3.2rem); font-weight: 900; font-style: italic;
+      letter-spacing: 0.04em; text-transform: uppercase;
+      color: #ffd54f;
+      text-shadow: 0 0 18px rgba(255, 213, 79, 0.8), 0 0 60px rgba(255, 111, 0, 0.6);
+      animation: rise 0.9s 0.3s ease-out both, pulse 2.2s 1.2s ease-in-out infinite;
+    }
+    .frase {
+      margin-top: 26px; min-height: 1.6em;
+      font-size: clamp(1rem, 2.6vw, 1.5rem); color: #e6e0ff;
+      font-family: Consolas, "Courier New", monospace;
+      animation: rise 0.9s 0.45s ease-out both;
+    }
+    .frase::after { content: "▌"; color: #00e5ff; animation: blink 0.9s steps(1) infinite; }
+    .ipl {
+      position: fixed; left: 0; right: 0; bottom: 26px; text-align: center; pointer-events: none;
+      font-size: clamp(0.75rem, 1.8vw, 1rem); letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.75);
+    }
+    .hint {
+      position: fixed; left: 0; right: 0; top: 22px; text-align: center; pointer-events: none;
+      font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(125, 249, 255, 0.6);
+    }
+    @keyframes flow { to { background-position: 300% 0; } }
+    @keyframes pulse { 50% { transform: scale(1.06); } }
+    @keyframes blink { 50% { opacity: 0; } }
+    @keyframes rise { from { opacity: 0; transform: translateY(26px); } }
+    @media (prefers-reduced-motion: reduce) {
+      h1 .name, .ganas, .tag, h1, .frase { animation: none; }
+    }
   </style>
 </head>
 <body>
+  <canvas id="c"></canvas>
+  <div class="glow" id="glow"></div>
+  <div class="hint">Mueve el cursor · Haz clic · Toca la pantalla</div>
   <main>
-    <h1>¡Bienvenida a clase, Caroline!</h1>
-    <p>Instituto del Progreso Latino</p>
+    <div class="tag">El futuro empieza hoy</div>
+    <h1>¡Bienvenida a clase,<span class="name">Caroline!</span></h1>
+    <div class="ganas">¡Dale con ganas!</div>
+    <div class="frase" id="frase"></div>
   </main>
+  <div class="ipl">Instituto del Progreso Latino</div>
+
+  <script>
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+    const glow = document.getElementById('glow');
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const COLORS = ['#00e5ff', '#b388ff', '#ff4fd8', '#ffd54f'];
+    let W, H, dpr, nodes = [], waves = [], sparks = [];
+    const mouse = { x: -9999, y: -9999, active: false };
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = innerWidth; H = innerHeight;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const count = Math.max(45, Math.min(150, Math.round(W * H / 11000)));
+      nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.5, vy: (Math.random() - 0.5) * 0.5,
+        r: 1.2 + Math.random() * 2.2,
+        c: COLORS[Math.floor(Math.random() * COLORS.length)],
+        p: Math.random() * Math.PI * 2
+      }));
+    }
+
+    function burst(x, y) {
+      waves.push({ x, y, r: 0, a: 1 });
+      for (let i = 0; i < 36; i++) {
+        const ang = Math.random() * Math.PI * 2, sp = 2 + Math.random() * 6;
+        sparks.push({ x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp, a: 1,
+          c: COLORS[Math.floor(Math.random() * COLORS.length)] });
+      }
+      for (const n of nodes) {
+        const dx = n.x - x, dy = n.y - y, d = Math.hypot(dx, dy) || 1;
+        if (d < 320) { const f = (1 - d / 320) * 9; n.vx += dx / d * f; n.vy += dy / d * f; }
+      }
+    }
+
+    function point(e) {
+      const t = e.touches ? e.touches[0] : e;
+      if (!t) return;
+      mouse.x = t.clientX; mouse.y = t.clientY; mouse.active = true;
+      glow.style.setProperty('--mx', mouse.x + 'px');
+      glow.style.setProperty('--my', mouse.y + 'px');
+    }
+    addEventListener('mousemove', point);
+    addEventListener('touchmove', point, { passive: true });
+    addEventListener('touchstart', e => { point(e); burst(mouse.x, mouse.y); }, { passive: true });
+    addEventListener('mousedown', e => burst(e.clientX, e.clientY));
+    addEventListener('mouseleave', () => { mouse.active = false; });
+    addEventListener('resize', resize);
+
+    const LINK = 135, REACH = 220;
+    function frame(t) {
+      ctx.fillStyle = 'rgba(5, 3, 15, 0.28)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
+
+      for (const n of nodes) {
+        if (mouse.active) {
+          const dx = mouse.x - n.x, dy = mouse.y - n.y, d = Math.hypot(dx, dy) || 1;
+          if (d < REACH) { const f = (1 - d / REACH) * 0.06; n.vx += dx / d * f; n.vy += dy / d * f; }
+        }
+        n.vx *= 0.985; n.vy *= 0.985;
+        const sp = Math.hypot(n.vx, n.vy);
+        if (sp < 0.25) { n.vx += (Math.random() - 0.5) * 0.06; n.vy += (Math.random() - 0.5) * 0.06; }
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < -20) n.x = W + 20; else if (n.x > W + 20) n.x = -20;
+        if (n.y < -20) n.y = H + 20; else if (n.y > H + 20) n.y = -20;
+      }
+
+      ctx.lineWidth = 1;
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i];
+        for (let j = i + 1; j < nodes.length; j++) {
+          const b = nodes[j], dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
+          if (d2 < LINK * LINK) {
+            ctx.globalAlpha = (1 - Math.sqrt(d2) / LINK) * 0.45;
+            ctx.strokeStyle = a.c;
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          }
+        }
+        if (mouse.active) {
+          const d = Math.hypot(a.x - mouse.x, a.y - mouse.y);
+          if (d < REACH) {
+            ctx.globalAlpha = (1 - d / REACH) * 0.9;
+            ctx.strokeStyle = '#7df9ff';
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+          }
+        }
+      }
+
+      for (const n of nodes) {
+        const tw = 0.6 + 0.4 * Math.sin(t / 600 + n.p);
+        ctx.globalAlpha = tw; ctx.fillStyle = n.c;
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = tw * 0.18;
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r * 4, 0, Math.PI * 2); ctx.fill();
+      }
+
+      for (const w of waves) {
+        w.r += 9; w.a *= 0.955;
+        ctx.globalAlpha = w.a; ctx.strokeStyle = '#ff4fd8'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, Math.PI * 2); ctx.stroke();
+        ctx.globalAlpha = w.a * 0.6; ctx.strokeStyle = '#00e5ff'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.arc(w.x, w.y, w.r * 0.7, 0, Math.PI * 2); ctx.stroke();
+      }
+      waves = waves.filter(w => w.a > 0.02);
+
+      for (const s of sparks) {
+        s.x += s.vx; s.y += s.vy; s.vx *= 0.96; s.vy *= 0.96; s.a *= 0.95;
+        ctx.globalAlpha = s.a; ctx.fillStyle = s.c;
+        ctx.beginPath(); ctx.arc(s.x, s.y, 2.2, 0, Math.PI * 2); ctx.fill();
+      }
+      sparks = sparks.filter(s => s.a > 0.03);
+
+      ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+      if (!reduced) requestAnimationFrame(frame);
+    }
+
+    // Frases de empoderamiento con efecto de escritura
+    const FRASES = [
+      'Tú tienes el poder de construir el futuro.',
+      'La inteligencia artificial es tu herramienta. Tú mandas.',
+      'Sin miedo: aquí se viene a aprender y a brillar.',
+      'Tu voz, tus ideas y tu talento cuentan.',
+      'Hoy aprendes. Mañana lideras.',
+      'Sí se puede. Y tú puedes con todo.'
+    ];
+    const fraseEl = document.getElementById('frase');
+    if (reduced) {
+      fraseEl.textContent = FRASES[0];
+    } else {
+      let fi = 0, ci = 0, borrando = false;
+      (function escribir() {
+        const txt = FRASES[fi];
+        ci += borrando ? -1 : 1;
+        fraseEl.textContent = txt.slice(0, ci);
+        let espera = borrando ? 22 : 48;
+        if (!borrando && ci === txt.length) { borrando = true; espera = 2400; }
+        else if (borrando && ci === 0) { borrando = false; fi = (fi + 1) % FRASES.length; espera = 350; }
+        setTimeout(escribir, espera);
+      })();
+    }
+
+    resize();
+    requestAnimationFrame(frame);
+    if (!reduced) setTimeout(() => burst(W / 2, H / 2), 700);
+  </script>
 </body>
 </html>
